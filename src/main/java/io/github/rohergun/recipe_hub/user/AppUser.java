@@ -1,0 +1,30 @@
+package io.github.rohergun.recipe_hub.user;
+
+import io.github.rohergun.recipe_hub.model.NamedEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor @Getter @Setter
+public class AppUser extends NamedEntity {
+    @Column(nullable = false, unique = true)
+    @Email
+    @NotBlank
+    private String email;
+
+    @Column(length = 500)
+    private String bio;
+
+    @Column(length = 50, unique = true, nullable = false)
+    @NotBlank
+    private String userName;
+}
