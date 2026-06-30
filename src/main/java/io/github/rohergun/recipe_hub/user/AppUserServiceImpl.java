@@ -2,7 +2,6 @@ package io.github.rohergun.recipe_hub.user;
 
 import io.github.rohergun.recipe_hub.user.dtos.UserProfileResponse;
 import io.github.rohergun.recipe_hub.user.dtos.UserProfileUpdateRequest;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
