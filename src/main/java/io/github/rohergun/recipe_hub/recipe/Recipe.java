@@ -1,10 +1,8 @@
 package io.github.rohergun.recipe_hub.recipe;
 
 import io.github.rohergun.recipe_hub.model.NamedEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import io.github.rohergun.recipe_hub.user.AppUser;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,9 +23,13 @@ public class Recipe extends NamedEntity {
     private String description;
 
     @ElementCollection
-    @NotBlank
+    @NotEmpty
     private List<String> ingredients = new ArrayList<>();
 
     @Column
     private Integer numberOfLikes;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", nullable = false)
+    private AppUser createdBy;
 }

@@ -27,7 +27,6 @@ public class AppUser extends NamedEntity {
     @NotBlank
     private String username;
 
-    @Builder.Default
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
     private List<Recipe> recipes = new ArrayList<>();
 }
