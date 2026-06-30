@@ -1,15 +1,14 @@
 package io.github.rohergun.recipe_hub.user;
 
 import io.github.rohergun.recipe_hub.model.NamedEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import io.github.rohergun.recipe_hub.recipe.Recipe;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -26,5 +25,9 @@ public class AppUser extends NamedEntity {
 
     @Column(length = 50, unique = true, nullable = false)
     @NotBlank
-    private String userName;
+    private String username;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private List<Recipe> recipes = new ArrayList<>();
 }
