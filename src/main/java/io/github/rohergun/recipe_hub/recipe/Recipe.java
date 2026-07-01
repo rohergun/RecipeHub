@@ -1,6 +1,7 @@
 package io.github.rohergun.recipe_hub.recipe;
 
 import io.github.rohergun.recipe_hub.model.NamedEntity;
+import io.github.rohergun.recipe_hub.tag.Tag;
 import io.github.rohergun.recipe_hub.user.AppUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -32,4 +33,10 @@ public class Recipe extends NamedEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
     private AppUser createdBy;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "recipe_tag",
+            joinColumns = @JoinColumn(name = "recipe_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private List<Tag> tags = new ArrayList<>();
 }

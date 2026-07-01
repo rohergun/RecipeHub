@@ -1,6 +1,5 @@
 package io.github.rohergun.recipe_hub;
 
-import io.github.rohergun.recipe_hub.user.AppUser;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

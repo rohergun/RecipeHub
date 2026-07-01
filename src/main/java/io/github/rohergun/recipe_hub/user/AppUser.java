@@ -2,13 +2,16 @@ package io.github.rohergun.recipe_hub.user;
 
 import io.github.rohergun.recipe_hub.model.NamedEntity;
 import io.github.rohergun.recipe_hub.recipe.Recipe;
+import io.github.rohergun.recipe_hub.tag.Tag;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -29,4 +32,7 @@ public class AppUser extends NamedEntity {
 
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
     private List<Recipe> recipes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private List<Tag> tags = new ArrayList<>();
 }
