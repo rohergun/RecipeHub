@@ -39,4 +39,8 @@ public class Recipe extends NamedEntity {
             joinColumns = @JoinColumn(name = "recipe_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "forked_from")
+    private Recipe forkedFrom; // null = original, non-null = forked
 }

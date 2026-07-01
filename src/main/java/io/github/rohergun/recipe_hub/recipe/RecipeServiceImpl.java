@@ -90,4 +90,29 @@ public class RecipeServiceImpl implements RecipeService{
         }
         recipeRepo.delete(recipe);
     }
+
+    @Override
+    @Transactional
+    public RecipeResponse forkRecipe(UUID userId, UUID recipeId) {
+        Recipe recipe = recipeRepo.findById(recipeId)
+                .orElseThrow(() -> new NoSuchElementException("Recipe not found"));
+        AppUser curUser = userRepo.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        if (recipe.getCreatedBy().getId().equals(userId)) {
+            throw  new IllegalArgumentException("You cannot fork your own recipe");
+        }
+
+        Recipe forkedRecipe = new Recipe();
+        forkedRecipe.setName(recipe.getName());
+        forkedRecipe.setDescription(recipe.getDescription());
+        forkedRecipe.setTags(recipe.getTags());
+        forkedRecipe.setIngredients(recipe.getIngredients());
+
+        forkedRecipe.setCreatedBy(curUser);
+        forkedRecipe.setForkedFrom(recipe);
+
+        recipeRepo.save(forkedRecipe);
+        return recipeMapper.toResponse(forkedRecipe);
+    }
 }
