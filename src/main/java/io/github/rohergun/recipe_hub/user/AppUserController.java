@@ -5,9 +5,9 @@ import io.github.rohergun.recipe_hub.user.dtos.UserProfileUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,14 +23,15 @@ public class AppUserController {
 
     @PutMapping("/me")
     public ResponseEntity<UserProfileResponse> updateProfile(
-            UUID id,
+            @AuthenticationPrincipal AppUser user,
             @RequestBody @Valid UserProfileUpdateRequest request){
-        return ResponseEntity.ok(userService.updateUserProfile(id, request));
+        return ResponseEntity.ok(userService.updateUserProfile(user.getId(), request));
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<Void> deleteUser(UUID id) {
-        userService.deleteUser(id);
+    public ResponseEntity<Void> deleteUser(
+            @AuthenticationPrincipal AppUser user) {
+        userService.deleteUser(user.getId());
         return ResponseEntity.noContent().build();
     }
 
