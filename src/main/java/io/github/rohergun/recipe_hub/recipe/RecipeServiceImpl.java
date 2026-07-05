@@ -97,8 +97,7 @@ public class RecipeServiceImpl implements RecipeService{
     public RecipeResponse forkRecipe(UUID userId, UUID recipeId) {
         Recipe recipe = recipeRepo.findById(recipeId)
                 .orElseThrow(() -> new NoSuchElementException("Recipe not found"));
-        AppUser curUser = userRepo.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+        AppUser curUser = userRepo.getReferenceById(userId);
 
         if (recipe.getCreatedBy().getId().equals(userId)) {
             throw  new IllegalArgumentException("You cannot fork your own recipe");
