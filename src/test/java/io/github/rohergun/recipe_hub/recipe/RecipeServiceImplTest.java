@@ -44,6 +44,7 @@ class RecipeServiceImplTest {
     private RecipeServiceImpl recipeService;
 
     private AppUser owner;
+    private AppUser otherUser;
     private UUID ownerId;
     private UUID otherUserId;
     private UUID recipeId;
@@ -58,6 +59,9 @@ class RecipeServiceImplTest {
         owner = new AppUser();
         ReflectionTestUtils.setField(owner, "id", ownerId);
         owner.setUsername("rohergun");
+
+        otherUser = new AppUser();
+        ReflectionTestUtils.setField(otherUser, "id", otherUserId);
 
         recipe = new Recipe();
         ReflectionTestUtils.setField(recipe, "id", recipeId);
@@ -252,5 +256,50 @@ class RecipeServiceImplTest {
                 .hasMessageContaining("Recipe not found");
 
         verify(recipeRepo, never()).delete(any());
+    }
+
+    @Test
+    void forkRecipe_createsForkedRecipe_whenUserIsNotOwner() {
+        RecipeResponse expected = sampleResponse();
+
+        when(recipeRepo.findById(recipeId)).thenReturn(Optional.of(recipe));
+        when(userRepo.getReferenceById(otherUserId)).thenReturn(otherUser);
+        when(recipeMapper.toResponse(any(Recipe.class))).thenReturn(expected);
+
+        RecipeResponse result = recipeService.forkRecipe(otherUserId, recipeId);
+
+        assertThat(result).isEqualTo(expected);
+
+        ArgumentCaptor<Recipe> captor = ArgumentCaptor.forClass(Recipe.class);
+        verify(recipeRepo).save(captor.capture());
+
+        Recipe saved = captor.getValue();
+        assertThat(saved.getName()).isEqualTo(recipe.getName());
+        assertThat(saved.getDescription()).isEqualTo(recipe.getDescription());
+        assertThat(saved.getIngredients()).isEqualTo(recipe.getIngredients());
+        assertThat(saved.getCreatedBy()).isEqualTo(otherUser);
+        assertThat(saved.getForkedFrom()).isEqualTo(recipe);
+    }
+
+    @Test
+    void forkRecipe_throws_whenUserIsOwner() {
+        when(recipeRepo.findById(recipeId)).thenReturn(Optional.of(recipe));
+
+        assertThatThrownBy(() -> recipeService.forkRecipe(ownerId, recipeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("cannot fork your own");
+
+        verify(recipeRepo, never()).save(any());
+    }
+
+    @Test
+    void forkRecipe_throws_whenRecipeNotFound() {
+        when(recipeRepo.findById(recipeId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> recipeService.forkRecipe(otherUserId, recipeId))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessageContaining("Recipe not found");
+
+        verify(recipeRepo, never()).save(any());
     }
 }
