@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -106,7 +107,7 @@ public class RecipeServiceImpl implements RecipeService{
         Recipe forkedRecipe = new Recipe();
         forkedRecipe.setName(recipe.getName());
         forkedRecipe.setDescription(recipe.getDescription());
-        forkedRecipe.setTags(recipe.getTags());
+        forkedRecipe.setTags(new ArrayList<>(recipe.getTags()));
         forkedRecipe.setIngredients(recipe.getIngredients());
 
         forkedRecipe.setCreatedBy(curUser);
