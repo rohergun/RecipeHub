@@ -28,10 +28,10 @@ public class RecipeController {
         return ResponseEntity.ok().body(recipeService.getAll(pageable));
     }
 
-    @GetMapping("/{recipeName}")
-    public ResponseEntity<Page<RecipeResponse>> getAllByName(
-            @PathVariable String recipeName,
-            @PageableDefault(size = 8, sort = {"name"}, direction = Sort.Direction.DESC)Pageable pageable) {
+    @GetMapping("/search")
+    public ResponseEntity<Page<RecipeResponse>> searchByName(
+            @RequestParam String recipeName,
+            @PageableDefault(size = 8, sort = {"name"}, direction = Sort.Direction.ASC)Pageable pageable) {
         return ResponseEntity.ok().body(recipeService.getRecipesByName(recipeName, pageable));
     }
 
