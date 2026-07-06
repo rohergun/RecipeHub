@@ -13,7 +13,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -71,5 +73,20 @@ public class RecipeController {
 
         recipeService.deleteRecipe(user.getId(), recipeId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{recipeId}/fork")
+    public ResponseEntity<RecipeResponse> forkRecipe(
+            @AuthenticationPrincipal AppUser user,
+            @PathVariable UUID recipeId){
+        RecipeResponse forked = recipeService.forkRecipe(user.getId(), recipeId);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/api/v1/recipes/{recipeId}")
+                .buildAndExpand(forked.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(forked);
     }
 }
