@@ -1,6 +1,8 @@
 package io.github.rohergun.recipe_hub.recipe;
 
+import io.github.rohergun.recipe_hub.recipe.dtos.CreateRecipeRequest;
 import io.github.rohergun.recipe_hub.recipe.dtos.RecipeResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,10 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -39,6 +38,15 @@ public class RecipeController {
             @AuthenticationPrincipal UUID userId,
             @PageableDefault(size = 8, sort = {"createdAt"}, direction = Sort.Direction.DESC)Pageable pageable){
         return ResponseEntity.ok().body(recipeService.getUserRecipes(userId, pageable));
+    }
+
+    @PostMapping("/me")
+    public ResponseEntity<RecipeResponse> createRecipe(
+            @AuthenticationPrincipal UUID userId,
+            @RequestBody @Valid CreateRecipeRequest request) {
+
+        RecipeResponse created = recipeService.addRecipe(userId, request);
+        return ResponseEntity.status(201).body(created);
     }
 
 }
