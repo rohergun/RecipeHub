@@ -42,6 +42,11 @@ public class RecipeController {
         return ResponseEntity.ok().body(recipeService.getUserRecipes(user.getId(), pageable));
     }
 
+    @GetMapping("/{recipeId}")
+    public ResponseEntity<RecipeResponse> getById(@PathVariable UUID recipeId){
+        return ResponseEntity.ok().body(recipeService.getById(recipeId));
+    }
+
     @PostMapping("/me")
     public ResponseEntity<RecipeResponse> createRecipe(
             @AuthenticationPrincipal AppUser user,
