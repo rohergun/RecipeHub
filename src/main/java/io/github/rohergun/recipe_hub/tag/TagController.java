@@ -52,18 +52,18 @@ public class TagController {
 
     @PutMapping("/me/{tagId}")
     public ResponseEntity<TagResponse> updateTag(
-            @AuthenticationPrincipal UUID userId,
+            @AuthenticationPrincipal AppUser user,
             @PathVariable UUID tagId,
             @RequestBody @Valid TagRequest request) {
-        return ResponseEntity.ok(tagService.updateTag(userId, tagId, request));
+        return ResponseEntity.ok(tagService.updateTag(user.getId(), tagId, request));
     }
 
     @DeleteMapping("/me/{tagId}")
     public ResponseEntity<Void> deleteTag(
-            @AuthenticationPrincipal UUID userId,
+            @AuthenticationPrincipal AppUser user,
             @PathVariable UUID tagId) {
 
-        tagService.deleteTag(userId, tagId);
+        tagService.deleteTag(user.getId(), tagId);
         return ResponseEntity.noContent().build();
     }
 }
