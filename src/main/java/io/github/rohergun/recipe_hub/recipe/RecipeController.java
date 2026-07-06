@@ -2,6 +2,7 @@ package io.github.rohergun.recipe_hub.recipe;
 
 import io.github.rohergun.recipe_hub.recipe.dtos.CreateRecipeRequest;
 import io.github.rohergun.recipe_hub.recipe.dtos.RecipeResponse;
+import io.github.rohergun.recipe_hub.recipe.dtos.UpdateRecipeRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -49,4 +50,11 @@ public class RecipeController {
         return ResponseEntity.status(201).body(created);
     }
 
+    @PutMapping("/me/{recipeId}")
+    public ResponseEntity<RecipeResponse> updateRecipe(
+            @AuthenticationPrincipal UUID userId,
+            @PathVariable UUID recipeId,
+            @RequestBody @Valid UpdateRecipeRequest request){
+       return ResponseEntity.ok().body(recipeService.updateRecipe(userId, recipeId, request));
+    }
 }
