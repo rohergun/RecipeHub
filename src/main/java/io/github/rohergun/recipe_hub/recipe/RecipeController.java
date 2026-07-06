@@ -63,4 +63,13 @@ public class RecipeController {
             @RequestBody @Valid UpdateRecipeRequest request){
        return ResponseEntity.ok().body(recipeService.updateRecipe(user.getId(), recipeId, request));
     }
+
+    @DeleteMapping("/me/{recipeId}")
+    public ResponseEntity<Void> deleteRecipe(
+            @AuthenticationPrincipal AppUser user,
+            @PathVariable UUID recipeId){
+
+        recipeService.deleteRecipe(user.getId(), recipeId);
+        return ResponseEntity.noContent().build();
+    }
 }
