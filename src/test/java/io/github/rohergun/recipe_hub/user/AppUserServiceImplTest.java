@@ -1,5 +1,6 @@
 package io.github.rohergun.recipe_hub.user;
 
+import io.github.rohergun.recipe_hub.exception.RecipeHubException;
 import io.github.rohergun.recipe_hub.user.dtos.UserProfileResponse;
 import io.github.rohergun.recipe_hub.user.dtos.UserProfileUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +42,7 @@ class AppUserServiceImplTest {
         user = new AppUser();
         ReflectionTestUtils.setField(user, "id", userId);
         user.setUsername("rohergun");
-        user.setEmail("roh@gmail.com");
+        user.setEmail("rohergun@gmail.com");
     }
 
     // ---------- getUserProfile ----------
@@ -66,7 +67,7 @@ class AppUserServiceImplTest {
         when(userRepo.findByUsername("ghost")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.getUserProfile("ghost"))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(RecipeHubException.class)
                 .hasMessageContaining("User not found");
     }
 
@@ -98,8 +99,8 @@ class AppUserServiceImplTest {
         when(userRepo.existsByUsername("taken-name")).thenReturn(true);
 
         assertThatThrownBy(() -> userService.updateUserProfile(userId, request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Username is already taken");
+                .isInstanceOf(RecipeHubException.class)
+                .hasMessageContaining("Username is already exists");
 
         verify(userRepo, never()).save(any());
     }
@@ -127,7 +128,8 @@ class AppUserServiceImplTest {
         when(userRepo.findById(userId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.updateUserProfile(userId, request))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(RecipeHubException.class)
+                .hasMessageContaining("User not found");
 
         verify(userRepo, never()).save(any());
     }
@@ -148,7 +150,7 @@ class AppUserServiceImplTest {
         when(userRepo.findById(userId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.deleteUser(userId))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(RecipeHubException.class)
                 .hasMessageContaining("User not found");
 
         verify(userRepo, never()).delete(any());

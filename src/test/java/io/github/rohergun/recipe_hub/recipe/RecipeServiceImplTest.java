@@ -1,5 +1,6 @@
 package io.github.rohergun.recipe_hub.recipe;
 
+import io.github.rohergun.recipe_hub.exception.RecipeHubException;
 import io.github.rohergun.recipe_hub.recipe.dtos.CreateRecipeRequest;
 import io.github.rohergun.recipe_hub.recipe.dtos.RecipeResponse;
 import io.github.rohergun.recipe_hub.recipe.dtos.UpdateRecipeRequest;
@@ -96,7 +97,7 @@ class RecipeServiceImplTest {
         when(recipeRepo.findById(recipeId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> recipeService.getById(recipeId))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(RecipeHubException.class)
                 .hasMessageContaining("Recipe not found");
     }
 
@@ -178,7 +179,7 @@ class RecipeServiceImplTest {
         when(userRepo.findById(ownerId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> recipeService.addRecipe(ownerId, request))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(RecipeHubException.class)
                 .hasMessageContaining("User not found");
 
         verify(recipeRepo, never()).save(any());
@@ -208,8 +209,8 @@ class RecipeServiceImplTest {
         when(recipeRepo.findById(recipeId)).thenReturn(Optional.of(recipe));
 
         assertThatThrownBy(() -> recipeService.updateRecipe(otherUserId, recipeId, request))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessageContaining("permission");
+                .isInstanceOf(RecipeHubException.class)
+                .hasMessageContaining("You dont have permission to access this resource");
 
         verify(recipeRepo, never()).save(any());
         verify(recipeMapper, never()).updateRecipeFromRequest(any(), any());
@@ -221,7 +222,7 @@ class RecipeServiceImplTest {
         when(recipeRepo.findById(recipeId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> recipeService.updateRecipe(ownerId, recipeId, request))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(RecipeHubException.class)
                 .hasMessageContaining("Recipe not found");
     }
 
@@ -241,8 +242,8 @@ class RecipeServiceImplTest {
         when(recipeRepo.findById(recipeId)).thenReturn(Optional.of(recipe));
 
         assertThatThrownBy(() -> recipeService.deleteRecipe(otherUserId, recipeId))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessageContaining("permission");
+                .isInstanceOf(RecipeHubException.class)
+                .hasMessageContaining("You dont have permission to access this resource");
 
         verify(recipeRepo, never()).delete(any());
     }
@@ -252,7 +253,7 @@ class RecipeServiceImplTest {
         when(recipeRepo.findById(recipeId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> recipeService.deleteRecipe(ownerId, recipeId))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(RecipeHubException.class)
                 .hasMessageContaining("Recipe not found");
 
         verify(recipeRepo, never()).delete(any());
@@ -286,8 +287,8 @@ class RecipeServiceImplTest {
         when(recipeRepo.findById(recipeId)).thenReturn(Optional.of(recipe));
 
         assertThatThrownBy(() -> recipeService.forkRecipe(ownerId, recipeId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("cannot fork your own");
+                .isInstanceOf(RecipeHubException.class)
+                .hasMessageContaining("You cannot fork your own recipe");
 
         verify(recipeRepo, never()).save(any());
     }
@@ -297,7 +298,7 @@ class RecipeServiceImplTest {
         when(recipeRepo.findById(recipeId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> recipeService.forkRecipe(otherUserId, recipeId))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(RecipeHubException.class)
                 .hasMessageContaining("Recipe not found");
 
         verify(recipeRepo, never()).save(any());

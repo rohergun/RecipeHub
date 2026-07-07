@@ -1,5 +1,6 @@
 package io.github.rohergun.recipe_hub.tag;
 
+import io.github.rohergun.recipe_hub.exception.RecipeHubException;
 import io.github.rohergun.recipe_hub.tag.dtos.TagRequest;
 import io.github.rohergun.recipe_hub.tag.dtos.TagResponse;
 import io.github.rohergun.recipe_hub.user.AppUser;
@@ -149,8 +150,8 @@ class TagServiceImplTest {
         when(tagRepo.existsByNameAndCreatedById("vegan", ownerId)).thenReturn(true);
 
         assertThatThrownBy(() -> tagService.addTag(ownerId, request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("already");
+                .isInstanceOf(RecipeHubException.class)
+                .hasMessageContaining("Tag with this name already exists");
 
         verify(tagRepo, never()).save(any());
     }
@@ -179,8 +180,8 @@ class TagServiceImplTest {
         when(tagRepo.findById(tagId)).thenReturn(Optional.of(tag));
 
         assertThatThrownBy(() -> tagService.updateTag(otherUserId, tagId, request))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessageContaining("permission");
+                .isInstanceOf(RecipeHubException.class)
+                .hasMessageContaining("You dont have permission to access this resource");
 
         verify(tagRepo, never()).save(any());
     }
@@ -191,7 +192,7 @@ class TagServiceImplTest {
         when(tagRepo.findById(tagId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> tagService.updateTag(ownerId, tagId, request))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(RecipeHubException.class)
                 .hasMessageContaining("Tag not found");
     }
 
@@ -211,8 +212,8 @@ class TagServiceImplTest {
         when(tagRepo.findById(tagId)).thenReturn(Optional.of(tag));
 
         assertThatThrownBy(() -> tagService.deleteTag(otherUserId, tagId))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessageContaining("permission");
+                .isInstanceOf(RecipeHubException.class)
+                .hasMessageContaining("You dont have permission to access this resource");
 
         verify(tagRepo, never()).delete(any());
     }
@@ -222,7 +223,7 @@ class TagServiceImplTest {
         when(tagRepo.findById(tagId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> tagService.deleteTag(ownerId, tagId))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(RecipeHubException.class)
                 .hasMessageContaining("Tag not found");
 
         verify(tagRepo, never()).delete(any());
