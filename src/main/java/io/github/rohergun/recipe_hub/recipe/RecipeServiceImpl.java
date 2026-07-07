@@ -1,5 +1,7 @@
 package io.github.rohergun.recipe_hub.recipe;
 
+import io.github.rohergun.recipe_hub.exception.DomainErrorMessage;
+import io.github.rohergun.recipe_hub.exception.RecipeHubException;
 import io.github.rohergun.recipe_hub.recipe.dtos.CreateRecipeRequest;
 import io.github.rohergun.recipe_hub.recipe.dtos.RecipeResponse;
 import io.github.rohergun.recipe_hub.recipe.dtos.UpdateRecipeRequest;
@@ -9,11 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -43,7 +43,7 @@ public class RecipeServiceImpl implements RecipeService{
     @Override
     public RecipeResponse getById(UUID recipeId) {
         Recipe recipe = recipeRepo.findById(recipeId)
-                .orElseThrow(() -> new NoSuchElementException("Recipe not found"));
+                .orElseThrow(() -> new RecipeHubException(DomainErrorMessage.RECIPE_NOT_FOUND));
         return recipeMapper.toResponse(recipe);
     }
 
@@ -51,10 +51,10 @@ public class RecipeServiceImpl implements RecipeService{
     @Transactional
     public RecipeResponse updateRecipe(UUID userId, UUID recipeId, UpdateRecipeRequest request) {
         Recipe recipe = recipeRepo.findById(recipeId)
-                .orElseThrow(() -> new NoSuchElementException("Recipe not found"));
+                .orElseThrow(() -> new RecipeHubException(DomainErrorMessage.RECIPE_NOT_FOUND));
 
         if (!recipe.getCreatedBy().getId().equals(userId)) {
-            throw new AccessDeniedException("You dont have permission to update this recipe");
+            throw new RecipeHubException(DomainErrorMessage.ACCESS_DENIED);
         }
         recipeMapper.updateRecipeFromRequest(request, recipe);
         recipeRepo.save(recipe);
@@ -66,7 +66,7 @@ public class RecipeServiceImpl implements RecipeService{
     @Transactional
     public RecipeResponse addRecipe(UUID userId, CreateRecipeRequest request) {
         AppUser user = userRepo.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+                .orElseThrow(() -> new RecipeHubException(DomainErrorMessage.USER_NOT_FOUND));
 
         Recipe newRecipe = new Recipe();
         newRecipe.setName(request.name());
@@ -84,10 +84,10 @@ public class RecipeServiceImpl implements RecipeService{
     @Transactional
     public void deleteRecipe(UUID userId, UUID recipeId) {
         Recipe recipe = recipeRepo.findById(recipeId)
-                .orElseThrow(() -> new NoSuchElementException("Recipe not found"));
+                .orElseThrow(() -> new RecipeHubException(DomainErrorMessage.RECIPE_NOT_FOUND));
 
         if (!recipe.getCreatedBy().getId().equals(userId)){
-            throw new AccessDeniedException("You dont have permission to delete this recipe");
+            throw new RecipeHubException(DomainErrorMessage.ACCESS_DENIED);
         }
         recipeRepo.delete(recipe);
     }
@@ -96,11 +96,11 @@ public class RecipeServiceImpl implements RecipeService{
     @Transactional
     public RecipeResponse forkRecipe(UUID userId, UUID recipeId) {
         Recipe recipe = recipeRepo.findById(recipeId)
-                .orElseThrow(() -> new NoSuchElementException("Recipe not found"));
+                .orElseThrow(() -> new RecipeHubException(DomainErrorMessage.RECIPE_NOT_FOUND));
         AppUser curUser = userRepo.getReferenceById(userId);
 
         if (recipe.getCreatedBy().getId().equals(userId)) {
-            throw  new IllegalArgumentException("You cannot fork your own recipe");
+            throw new RecipeHubException(DomainErrorMessage.CANNOT_FORK_OWN_RECIPE);
         }
 
         Recipe forkedRecipe = new Recipe();
