@@ -1,17 +1,17 @@
 package io.github.rohergun.recipe_hub.tag;
 
 
+import io.github.rohergun.recipe_hub.exception.DomainErrorMessage;
+import io.github.rohergun.recipe_hub.exception.RecipeHubException;
 import io.github.rohergun.recipe_hub.tag.dtos.TagRequest;
 import io.github.rohergun.recipe_hub.tag.dtos.TagResponse;
 import io.github.rohergun.recipe_hub.user.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -43,7 +43,7 @@ public class TagServiceImpl implements TagService{
     @Transactional
     public TagResponse addTag(UUID userId, TagRequest request) {
         if (tagRepo.existsByNameAndCreatedById(request.name(), userId)) {
-            throw new IllegalArgumentException("Tag is already exits");
+            throw new RecipeHubException(DomainErrorMessage.TAG_ALREADY_EXISTS);
         }
 
         Tag newTag = new Tag();
@@ -58,10 +58,10 @@ public class TagServiceImpl implements TagService{
     @Transactional
     public TagResponse updateTag(UUID userId, UUID tagId, TagRequest request) {
         Tag tag = tagRepo.findById(tagId)
-                .orElseThrow(() -> new NoSuchElementException("Tag not found"));
+                .orElseThrow(() -> new RecipeHubException(DomainErrorMessage.TAG_NOT_FOUND));
 
         if (!tag.getCreatedBy().getId().equals(userId)) {
-            throw new AccessDeniedException("You dont have permission to update this tag");
+            throw new RecipeHubException(DomainErrorMessage.ACCESS_DENIED);
         }
         tag.setName(request.name());
         tagRepo.save(tag);
@@ -73,9 +73,9 @@ public class TagServiceImpl implements TagService{
     @Transactional
     public void deleteTag(UUID userId, UUID tagId) {
         Tag tag = tagRepo.findById(tagId)
-                .orElseThrow(() -> new NoSuchElementException("Tag not found"));
+                .orElseThrow(() -> new RecipeHubException(DomainErrorMessage.TAG_NOT_FOUND));
         if (!tag.getCreatedBy().getId().equals(userId)) {
-            throw new AccessDeniedException("You dont have permission to delete this tag");
+            throw new RecipeHubException(DomainErrorMessage.ACCESS_DENIED);
         }
         tagRepo.delete(tag);
     }
