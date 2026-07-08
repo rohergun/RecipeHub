@@ -9,9 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -22,6 +20,10 @@ public class AppUser extends NamedEntity {
     @Email
     @NotBlank
     private String email;
+
+    @Column(nullable = false)
+    @NotBlank
+    private String password;
 
     @Column(length = 500)
     private String bio;
