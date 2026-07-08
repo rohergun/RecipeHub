@@ -2,5 +2,14 @@ spring:
   application:
     name: recipe-hub
 
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydatabase
+    username: myuser
+    password: secret
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     open-in-view: false
+    hibernate:
+      ddl-auto: update
+    show-sql: true
