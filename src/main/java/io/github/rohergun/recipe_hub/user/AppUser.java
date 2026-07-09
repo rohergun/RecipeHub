@@ -28,7 +28,7 @@ public class AppUser extends NamedEntity {
     @Column(length = 500)
     private String bio;
 
-    @Column(length = 50, unique = true, nullable = false)
+    @Column(length = 20, unique = true, nullable = false)
     @NotBlank
     private String username;
 
