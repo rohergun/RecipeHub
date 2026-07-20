@@ -12,8 +12,12 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+
+    @Value("${jwt.secret}")
     private final SecretKey key;
-    private static final long EXPIRATION = 86400000L;
+
+    @Value("${jwt.expiration}")
+    private long expiration;
 
     public JwtService(@Value("${jwt.secret}") String secret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
@@ -26,7 +30,7 @@ public class JwtService {
                 .issuedAt(new Date())
                 .expiration(
                         new Date(
-                                System.currentTimeMillis() + EXPIRATION
+                                System.currentTimeMillis() + expiration
                         )
                 ).signWith(key).compact();
     }
