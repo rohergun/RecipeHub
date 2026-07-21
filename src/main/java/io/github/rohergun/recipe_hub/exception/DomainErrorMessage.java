@@ -23,7 +23,8 @@ public enum DomainErrorMessage {
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "You dont have permission to access this resource"),
 
     // GENERIC
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong happened");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Something wrong happened"),
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "Unauthorized, something wrong with user credentials");
 
     private final HttpStatus httpStatus;
     private final String description;
